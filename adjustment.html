@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Adjustment - DisplayPerfect</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/adjustment.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-adjust"></i>
+                    <h1>DisplayPerfect</h1>
+                </a>
+            </div>
+            <p class="tagline">Adjust your display settings</p>
+        </header>
+
+        <div class="adjustment-container">
+            <div class="scenario-info">
+                <h2 id="scenario-title">Loading...</h2>
+                <p id="scenario-description">Please wait while we prepare your adjustment settings.</p>
+            </div>
+            
+            <div class="adjustment-panel">
+                <div class="adjustment-image">
+                    <div class="reference-image" id="reference-image">
+                        <!-- Reference image will be loaded here based on scenario -->
+                    </div>
+                    <div class="image-instructions">
+                        <p>Adjust the sliders until you can see all elements in the image correctly</p>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="brightness">Brightness</label>
+                        <input type="range" id="brightness" min="50" max="150" value="100">
+                        <span class="value">100%</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="contrast">Contrast</label>
+                        <input type="range" id="contrast" min="50" max="150" value="100">
+                        <span class="value">100%</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="saturation">Saturation</label>
+                        <input type="range" id="saturation" min="0" max="200" value="100">
+                        <span class="value">100%</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="temperature">Color Temperature</label>
+                        <input type="range" id="temperature" min="3000" max="10000" value="6500">
+                        <span class="value">6500K</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="reset-button">Reset to Default</button>
+                <button class="save-button">Save Settings</button>
+            </div>
+            
+            <div class="presets">
+                <h3>Recommended Presets</h3>
+                <div class="preset-buttons" id="preset-buttons">
+                    <!-- Preset buttons will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 DisplayPerfect. All rights reserved.</p>
+    </footer>
+
+    <div class="settings-saved-notification">
+        <i class="fas fa-check-circle"></i>
+        <p>Settings saved successfully!</p>
+    </div>
+
+    <script src="js/adjustment.js"></script>
+</body>
+</html> 
