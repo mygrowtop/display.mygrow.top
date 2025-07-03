@@ -1,0 +1,282 @@
+/* Reference page specific styles */
+
+/* Full screen layout */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    padding: 1rem 0;
+    z-index: 10;
+    position: relative;
+}
+
+.logo a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo i {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-right: 1rem;
+}
+
+.scenario-title {
+    margin-top: 0.5rem;
+}
+
+.scenario-title h2 {
+    font-size: 1.8rem;
+    margin: 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+footer {
+    background: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    padding: 0.5rem;
+    z-index: 10;
+    position: relative;
+}
+
+/* Reference container */
+.reference-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.reference-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reference-image canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Instructions overlay */
+.instructions-overlay {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.instruction-box {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.instruction-box h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-size: 1.4rem;
+}
+
+.instruction-box ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.instruction-box li {
+    margin-bottom: 0.7rem;
+    line-height: 1.5;
+}
+
+.instruction-specific {
+    font-weight: bold;
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Scenario selector */
+.scenario-selector {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scenario-selector h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.scenario-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.scenario-btn {
+    background: rgba(50, 50, 50, 0.8);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.scenario-btn:hover {
+    background: rgba(70, 70, 70, 0.9);
+    transform: translateY(-2px);
+}
+
+.scenario-btn.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(110, 68, 255, 0.5);
+}
+
+/* Fullscreen button */
+.fullscreen-btn {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.fullscreen-btn:hover {
+    background: rgba(60, 60, 60, 0.8);
+}
+
+.fullscreen-btn i {
+    font-size: 1.2rem;
+}
+
+/* Fullscreen mode styles */
+.fullscreen-mode header,
+.fullscreen-mode footer,
+.fullscreen-mode .instruction-box,
+.fullscreen-mode .scenario-selector {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.fullscreen-mode .reference-image {
+    background-color: #000;
+}
+
+.fullscreen-mode .fullscreen-btn {
+    opacity: 0.3;
+}
+
+.fullscreen-mode .fullscreen-btn:hover {
+    opacity: 1;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .instructions-overlay {
+        bottom: 0.5rem;
+        left: 0.5rem;
+        right: 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .instruction-box {
+        padding: 1rem;
+    }
+    
+    .instruction-box h3 {
+        font-size: 1.2rem;
+    }
+    
+    .instruction-box ol {
+        margin-left: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .instruction-box li {
+        font-size: 0.9rem;
+    }
+    
+    .scenario-selector {
+        padding: 0.5rem;
+    }
+    
+    .scenario-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .fullscreen-btn {
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+} 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Display Adjustment - DisplayPerfect</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/adjustment.css">
+    <link rel="stylesheet" href="css/reference.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -17,81 +17,45 @@
                     <h1>DisplayPerfect</h1>
                 </a>
             </div>
-            <p class="tagline">Adjust your display settings</p>
+            <div class="scenario-title">
+                <h2 id="scenario-title">Gaming Display Optimization</h2>
+            </div>
         </header>
 
-        <div class="adjustment-container">
-            <div class="scenario-info">
-                <h2 id="scenario-title">Loading...</h2>
-                <p id="scenario-description">Please wait while we prepare your adjustment settings.</p>
+        <div class="reference-container">
+            <div class="reference-image" id="reference-image">
+                <!-- Reference image will be loaded here based on scenario -->
             </div>
             
-            <div class="adjustment-panel">
-                <div class="adjustment-image">
-                    <div class="reference-image" id="reference-image">
-                        <!-- Reference image will be loaded here based on scenario -->
-                    </div>
-                    <div class="image-instructions" id="image-instructions">
-                        Adjust until you can see the circle in the dark area
+            <div class="instructions-overlay">
+                <div class="instruction-box">
+                    <h3>How to adjust your display:</h3>
+                    <ol>
+                        <li>Look at the test pattern above</li>
+                        <li>Use your monitor's physical buttons to enter its settings menu</li>
+                        <li>Adjust brightness until you can barely see the circle in the darkest area</li>
+                        <li>Adjust contrast until you can clearly distinguish between all gradient boxes</li>
+                        <li>Save your monitor settings when done</li>
+                    </ol>
+                    <div class="instruction-specific" id="instruction-specific">
+                        You should be able to see all boxes from 1-10 while box A should be barely visible
                     </div>
                 </div>
                 
-                <div class="controls">
-                    <div class="control-group">
-                        <label for="brightness">Brightness</label>
-                        <input type="range" id="brightness" min="50" max="150" value="100">
-                        <span class="value">100%</span>
-                    </div>
-                    
-                    <div class="control-group">
-                        <label for="contrast">Contrast</label>
-                        <input type="range" id="contrast" min="50" max="150" value="100">
-                        <span class="value">100%</span>
-                    </div>
-                    
-                    <div class="control-group">
-                        <label for="saturation">Saturation</label>
-                        <input type="range" id="saturation" min="0" max="200" value="100">
-                        <span class="value">100%</span>
-                    </div>
-                    
-                    <div class="control-group">
-                        <label for="temperature">Color Temperature</label>
-                        <input type="range" id="temperature" min="3000" max="10000" value="6500">
-                        <span class="value">6500K</span>
+                <div class="scenario-selector">
+                    <h3>Select Test Pattern:</h3>
+                    <div class="scenario-buttons">
+                        <button class="scenario-btn active" data-scenario="gaming">Gaming</button>
+                        <button class="scenario-btn" data-scenario="reading">Reading</button>
+                        <button class="scenario-btn" data-scenario="office">Office</button>
+                        <button class="scenario-btn" data-scenario="videos">Videos</button>
+                        <button class="scenario-btn" data-scenario="movies">Movies</button>
                     </div>
                 </div>
-            </div>
-            
-            <div class="buttons">
-                <button class="reset-button">Reset to Default</button>
-                <button class="save-button">Save Settings</button>
-            </div>
-            
-            <div class="presets">
-                <h3>Recommended Presets</h3>
-                <div class="preset-buttons" id="preset-buttons">
-                    <!-- Preset buttons will be dynamically loaded here -->
-                </div>
-            </div>
-            
-            <div class="key-controls">
-                <div class="key-group">
-                    <span class="key">↑</span><span class="key">↓</span>
-                    <span class="description">Adjust Brightness</span>
-                </div>
-                <div class="key-group">
-                    <span class="key">←</span><span class="key">→</span>
-                    <span class="description">Adjust Contrast</span>
-                </div>
-                <div class="key-group">
-                    <span class="key">R</span>
-                    <span class="description">Reset</span>
-                </div>
-                <div class="key-group">
-                    <span class="key">S</span>
-                    <span class="description">Save</span>
-                </div>
+                
+                <button class="fullscreen-btn" id="fullscreen-btn">
+                    <i class="fas fa-expand"></i> Toggle Fullscreen
+                </button>
             </div>
         </div>
     </div>
@@ -100,11 +64,6 @@
         <p>&copy; 2023 DisplayPerfect. All rights reserved.</p>
     </footer>
 
-    <div class="settings-saved-notification">
-        <i class="fas fa-check-circle"></i>
-        <p>Settings saved successfully!</p>
-    </div>
-
-    <script src="js/adjustment.js"></script>
+    <script src="js/reference.js"></script>
 </body>
 </html> 
