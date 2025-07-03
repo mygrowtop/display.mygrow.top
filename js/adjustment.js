@@ -17,6 +17,12 @@ function initAdjustmentPage() {
     // Add event listeners to buttons
     document.querySelector('.reset-button').addEventListener('click', resetToDefault);
     document.querySelector('.save-button').addEventListener('click', saveSettings);
+    
+    // Add keyboard controls
+    initKeyboardControls();
+    
+    // Load saved settings if available
+    loadSavedSettings(scenario);
 }
 
 // Scenario configurations
@@ -25,6 +31,7 @@ const scenarioConfigs = {
         title: 'Gaming Display Optimization',
         description: 'Adjust your display for the best gaming experience with optimal visibility in dark scenes.',
         referenceImage: createGamingReferenceImage,
+        imageInstructions: 'Adjust until you can see the circle in the dark area',
         presets: [
             { name: 'Action/FPS', brightness: 110, contrast: 120, saturation: 110, temperature: 6700 },
             { name: 'Horror', brightness: 90, contrast: 130, saturation: 80, temperature: 5500 },
@@ -36,6 +43,7 @@ const scenarioConfigs = {
         title: 'Reading Mode',
         description: 'Optimize your display for comfortable reading with reduced eye strain.',
         referenceImage: createReadingReferenceImage,
+        imageInstructions: 'Adjust until text appears clear and comfortable to read',
         presets: [
             { name: 'Daytime', brightness: 100, contrast: 100, saturation: 90, temperature: 6000 },
             { name: 'Night Mode', brightness: 80, contrast: 90, saturation: 80, temperature: 4500 },
@@ -47,6 +55,7 @@ const scenarioConfigs = {
         title: 'Office & Productivity',
         description: 'Settings optimized for work environments and reducing eye fatigue.',
         referenceImage: createOfficeReferenceImage,
+        imageInstructions: 'Adjust until spreadsheet grid lines are clearly visible',
         presets: [
             { name: 'Documents', brightness: 95, contrast: 100, saturation: 90, temperature: 5800 },
             { name: 'Spreadsheets', brightness: 100, contrast: 105, saturation: 95, temperature: 6200 },
@@ -58,6 +67,7 @@ const scenarioConfigs = {
         title: 'Short Video Optimization',
         description: 'Enhanced colors and brightness for social media and short-form videos.',
         referenceImage: createVideosReferenceImage,
+        imageInstructions: 'Adjust until colors appear vibrant and balanced',
         presets: [
             { name: 'Vibrant', brightness: 110, contrast: 120, saturation: 130, temperature: 7000 },
             { name: 'Balanced', brightness: 105, contrast: 110, saturation: 110, temperature: 6500 },
@@ -69,6 +79,7 @@ const scenarioConfigs = {
         title: 'Movie & TV Experience',
         description: 'Cinema-quality settings with perfect black levels and color reproduction.',
         referenceImage: createMoviesReferenceImage,
+        imageInstructions: 'Adjust until you can see details in the darkest areas',
         presets: [
             { name: 'Cinema', brightness: 95, contrast: 120, saturation: 100, temperature: 5800 },
             { name: 'Drama', brightness: 100, contrast: 110, saturation: 95, temperature: 6000 },
@@ -85,6 +96,11 @@ function loadScenarioData(scenario) {
     // Set title and description
     document.getElementById('scenario-title').textContent = config.title;
     document.getElementById('scenario-description').textContent = config.description;
+    
+    // Set image instructions
+    if (document.getElementById('image-instructions')) {
+        document.getElementById('image-instructions').textContent = config.imageInstructions;
+    }
     
     // Create reference image
     const referenceImageElement = document.getElementById('reference-image');
@@ -107,6 +123,9 @@ function loadPresets(presets) {
         presetButton.textContent = preset.name;
         presetButton.addEventListener('click', () => {
             applyPreset(preset);
+            
+            // Add audio feedback
+            playAudioFeedback('click');
         });
         presetButtonsContainer.appendChild(presetButton);
     });
@@ -144,11 +163,87 @@ function initSliders() {
         slider.addEventListener('input', () => {
             updateSliderValues();
             applyFilters();
+            
+            // Add audio feedback
+            playAudioFeedback('slide');
+        });
+        
+        // Add visual feedback on slider focus
+        slider.addEventListener('focus', () => {
+            slider.parentElement.classList.add('active-control');
+        });
+        
+        slider.addEventListener('blur', () => {
+            slider.parentElement.classList.remove('active-control');
         });
     });
     
     // Initialize displayed values
     updateSliderValues();
+}
+
+function initKeyboardControls() {
+    // Add keyboard event listener
+    document.addEventListener('keydown', (e) => {
+        const brightnessSlider = document.getElementById('brightness');
+        const contrastSlider = document.getElementById('contrast');
+        const saturationSlider = document.getElementById('saturation');
+        const temperatureSlider = document.getElementById('temperature');
+        
+        const step = 5; // Adjustment step
+        
+        switch(e.key) {
+            case 'ArrowUp':
+                // Increase brightness
+                brightnessSlider.value = Math.min(parseInt(brightnessSlider.value) + step, brightnessSlider.max);
+                break;
+            case 'ArrowDown':
+                // Decrease brightness
+                brightnessSlider.value = Math.max(parseInt(brightnessSlider.value) - step, brightnessSlider.min);
+                break;
+            case 'ArrowRight':
+                // Increase contrast
+                contrastSlider.value = Math.min(parseInt(contrastSlider.value) + step, contrastSlider.max);
+                break;
+            case 'ArrowLeft':
+                // Decrease contrast
+                contrastSlider.value = Math.max(parseInt(contrastSlider.value) - step, contrastSlider.min);
+                break;
+            case 'r':
+            case 'R':
+                // Reset to default
+                resetToDefault();
+                break;
+            case 's':
+            case 'S':
+                // Save settings
+                saveSettings();
+                break;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+                // Apply presets using number keys
+                const presetButtons = document.querySelectorAll('.preset-button');
+                const presetIndex = parseInt(e.key) - 1;
+                if (presetButtons[presetIndex]) {
+                    presetButtons[presetIndex].click();
+                }
+                break;
+            default:
+                return; // Exit for other keys
+        }
+        
+        // Update slider values and apply filters
+        updateSliderValues();
+        applyFilters();
+        
+        // Add audio feedback
+        playAudioFeedback('key');
+        
+        // Prevent default action (like page scrolling)
+        e.preventDefault();
+    });
 }
 
 function updateSliderValues() {
@@ -206,6 +301,18 @@ function applyFilters() {
         ${Math.round(255 * blueTint)},
         ${Math.abs(temperatureNormalized) * 0.3}
     )`;
+    
+    // Apply same filter to the entire document body for a full-screen effect
+    document.body.style.filter = `
+        brightness(${brightnessValue / 100})
+        contrast(${contrastValue / 100})
+        saturate(${saturationValue / 100})
+    `;
+    
+    // Apply color temperature to body
+    document.body.style.backgroundColor = temperatureNormalized < 0 ? 
+        `rgba(255, ${Math.round(255 * (1 - Math.abs(temperatureNormalized) * 0.05))}, ${Math.round(255 * (1 - Math.abs(temperatureNormalized) * 0.1))}, 0.2)` : 
+        `rgba(${Math.round(255 * (1 - temperatureNormalized * 0.1))}, ${Math.round(255 * (1 - temperatureNormalized * 0.05))}, 255, 0.2)`;
 }
 
 function resetToDefault() {
@@ -225,6 +332,9 @@ function resetToDefault() {
     document.querySelectorAll('.preset-button').forEach(button => {
         button.classList.remove('active');
     });
+    
+    // Add audio feedback
+    playAudioFeedback('reset');
 }
 
 function saveSettings() {
@@ -249,13 +359,102 @@ function saveSettings() {
     setTimeout(() => {
         notification.classList.remove('show');
     }, 3000);
+    
+    // Add audio feedback
+    playAudioFeedback('save');
+}
+
+function loadSavedSettings(scenario) {
+    // Try to load saved settings from localStorage
+    const savedSettings = localStorage.getItem(`displayPerfect_${scenario}`);
+    
+    if (savedSettings) {
+        try {
+            const settings = JSON.parse(savedSettings);
+            
+            // Apply saved settings
+            document.getElementById('brightness').value = settings.brightness || 100;
+            document.getElementById('contrast').value = settings.contrast || 100;
+            document.getElementById('saturation').value = settings.saturation || 100;
+            document.getElementById('temperature').value = settings.temperature || 6500;
+            
+            // Update displayed values
+            updateSliderValues();
+            
+            // Apply filters
+            applyFilters();
+        } catch (e) {
+            console.error('Error loading saved settings:', e);
+        }
+    }
+}
+
+// Audio feedback functions
+function playAudioFeedback(type) {
+    // Create audio context on first use
+    if (!window.audioContext) {
+        try {
+            window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.error('Web Audio API not supported:', e);
+            return;
+        }
+    }
+    
+    const ctx = window.audioContext;
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    // Different sounds for different actions
+    switch(type) {
+        case 'click':
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 440;
+            gainNode.gain.value = 0.1;
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.1);
+            break;
+        case 'slide':
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 330;
+            gainNode.gain.value = 0.05;
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.05);
+            break;
+        case 'key':
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 523;
+            gainNode.gain.value = 0.05;
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.05);
+            break;
+        case 'save':
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 880;
+            gainNode.gain.value = 0.1;
+            oscillator.start(ctx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.2);
+            oscillator.stop(ctx.currentTime + 0.3);
+            break;
+        case 'reset':
+            oscillator.type = 'square';
+            oscillator.frequency.value = 330;
+            gainNode.gain.value = 0.1;
+            oscillator.start(ctx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.2);
+            oscillator.stop(ctx.currentTime + 0.3);
+            break;
+    }
 }
 
 // Reference image generation functions
 function createGamingReferenceImage(container) {
     const canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 300;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     container.appendChild(canvas);
     
     const ctx = canvas.getContext('2d');
@@ -264,35 +463,40 @@ function createGamingReferenceImage(container) {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Create gradient from dark to light
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-    gradient.addColorStop(0, '#000000');
-    gradient.addColorStop(0.4, '#1a1a1a');
-    gradient.addColorStop(0.7, '#4d4d4d');
-    gradient.addColorStop(1, '#f0f0f0');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
     
-    // Draw gradient bars
-    ctx.fillStyle = gradient;
+    // Create gradient bars from dark to light
+    const gradientWidth = Math.min(canvas.width * 0.8, 800);
+    const gradientHeight = 30;
+    const startX = centerX - gradientWidth / 2;
+    
     for (let i = 0; i < 5; i++) {
-        ctx.fillRect(50, 50 + i * 40, 400, 20);
+        const y = centerY - 100 + i * (gradientHeight + 20);
+        
+        const gradient = ctx.createLinearGradient(startX, y, startX + gradientWidth, y);
+        gradient.addColorStop(0, '#000000');
+        gradient.addColorStop(0.2, '#0a0a0a');
+        gradient.addColorStop(0.4, '#1a1a1a');
+        gradient.addColorStop(0.6, '#4d4d4d');
+        gradient.addColorStop(0.8, '#808080');
+        gradient.addColorStop(1, '#f0f0f0');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(startX, y, gradientWidth, gradientHeight);
     }
     
     // Draw hard to see enemy silhouette in dark area
     ctx.fillStyle = '#0a0a0a';
     ctx.beginPath();
-    ctx.arc(100, 150, 20, 0, Math.PI * 2);
+    ctx.arc(startX + gradientWidth * 0.1, centerY, 30, 0, Math.PI * 2);
     ctx.fill();
-    
-    // Text instructions
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Arial';
-    ctx.fillText('Adjust until you can see the circle in the dark area', 150, 280);
 }
 
 function createReadingReferenceImage(container) {
     const canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 300;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     container.appendChild(canvas);
     
     const ctx = canvas.getContext('2d');
@@ -301,22 +505,36 @@ function createReadingReferenceImage(container) {
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
     // Sample text with varying sizes
     ctx.fillStyle = '#000';
-    ctx.font = '20px serif';
-    ctx.fillText('Adjust for comfortable reading', 50, 50);
+    ctx.font = '32px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Adjust for comfortable reading', centerX, centerY - 200);
     
-    ctx.font = '14px sans-serif';
-    const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
+    ctx.font = '20px sans-serif';
+    const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
     
     // Wrap text
-    wrapText(ctx, text, 50, 80, 400, 20);
+    wrapText(ctx, text, centerX, centerY - 100, 600, 30);
+    
+    // Different font sizes
+    const fontSizes = [12, 14, 16, 18, 20, 22, 24];
+    let y = centerY + 50;
+    
+    fontSizes.forEach(size => {
+        ctx.font = `${size}px sans-serif`;
+        ctx.fillText(`This text is ${size}px in size. Ensure it's comfortable to read.`, centerX, y);
+        y += size + 10;
+    });
 }
 
 function createOfficeReferenceImage(container) {
     const canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 300;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     container.appendChild(canvas);
     
     const ctx = canvas.getContext('2d');
@@ -325,38 +543,55 @@ function createOfficeReferenceImage(container) {
     ctx.fillStyle = '#f7f7f7';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
     // Draw spreadsheet-like grid
+    const gridWidth = Math.min(canvas.width * 0.8, 800);
+    const gridHeight = 400;
+    const startX = centerX - gridWidth / 2;
+    const startY = centerY - gridHeight / 2;
+    
     ctx.strokeStyle = '#ccc';
     ctx.lineWidth = 1;
     
-    for (let x = 50; x <= 450; x += 50) {
+    // Draw columns
+    const colCount = 10;
+    for (let i = 0; i <= colCount; i++) {
+        const x = startX + (gridWidth / colCount) * i;
         ctx.beginPath();
-        ctx.moveTo(x, 50);
-        ctx.lineTo(x, 250);
+        ctx.moveTo(x, startY);
+        ctx.lineTo(x, startY + gridHeight);
         ctx.stroke();
     }
     
-    for (let y = 50; y <= 250; y += 25) {
+    // Draw rows
+    const rowCount = 20;
+    for (let i = 0; i <= rowCount; i++) {
+        const y = startY + (gridHeight / rowCount) * i;
         ctx.beginPath();
-        ctx.moveTo(50, y);
-        ctx.lineTo(450, y);
+        ctx.moveTo(startX, y);
+        ctx.lineTo(startX + gridWidth, y);
         ctx.stroke();
     }
     
     // Add some sample data
     ctx.fillStyle = '#333';
-    ctx.font = '12px Arial';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
     
-    const headers = ['Category', 'Q1', 'Q2', 'Q3', 'Q4', 'Total'];
+    const headers = ['Category', 'Q1', 'Q2', 'Q3', 'Q4', 'Total', 'Average', 'Min', 'Max'];
+    const cellWidth = gridWidth / colCount;
+    
     headers.forEach((header, i) => {
-        ctx.fillText(header, 60 + i * 50, 70);
+        ctx.fillText(header, startX + cellWidth/2 + i * cellWidth, startY + 25);
     });
 }
 
 function createVideosReferenceImage(container) {
     const canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 300;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     container.appendChild(canvas);
     
     const ctx = canvas.getContext('2d');
@@ -368,22 +603,33 @@ function createVideosReferenceImage(container) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
     // Draw video player-like interface
+    const playerWidth = Math.min(canvas.width * 0.8, 800);
+    const playerHeight = 450;
+    const startX = centerX - playerWidth / 2;
+    const startY = centerY - playerHeight / 2;
+    
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(50, 50, 400, 200);
+    ctx.fillRect(startX, startY, playerWidth, playerHeight);
     
     // Colorful elements
     const colors = ['#FF5E7E', '#47A8BD', '#FFDA77', '#9649CB', '#79D45E'];
-    for (let i = 0; i < 5; i++) {
-        ctx.fillStyle = colors[i];
-        ctx.fillRect(75 + i * 75, 100, 50, 100);
-    }
+    const elementWidth = playerWidth / colors.length - 20;
+    const elementHeight = playerHeight - 80;
+    
+    colors.forEach((color, i) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(startX + 10 + i * (elementWidth + 20), startY + 40, elementWidth, elementHeight);
+    });
 }
 
 function createMoviesReferenceImage(container) {
     const canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 300;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     container.appendChild(canvas);
     
     const ctx = canvas.getContext('2d');
@@ -392,29 +638,52 @@ function createMoviesReferenceImage(container) {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
     // Cinema aspect ratio bars
-    ctx.fillRect(0, 0, canvas.width, 40);
-    ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+    const barHeight = canvas.height * 0.12;
+    ctx.fillRect(0, 0, canvas.width, barHeight);
+    ctx.fillRect(0, canvas.height - barHeight, canvas.width, barHeight);
     
     // Dark scene with subtle details
+    const sceneWidth = Math.min(canvas.width * 0.8, 800);
+    const sceneHeight = canvas.height - barHeight * 2 - 40;
+    const startX = centerX - sceneWidth / 2;
+    const startY = barHeight + 20;
+    
     ctx.fillStyle = '#0a0a0a';
-    ctx.fillRect(75, 70, 350, 160);
+    ctx.fillRect(startX, startY, sceneWidth, sceneHeight);
     
     // Stars/lights in dark scene
     ctx.fillStyle = '#fff';
-    for (let i = 0; i < 50; i++) {
-        const x = 75 + Math.random() * 350;
-        const y = 70 + Math.random() * 160;
-        const size = Math.random() * 2;
+    for (let i = 0; i < 200; i++) {
+        const x = startX + Math.random() * sceneWidth;
+        const y = startY + Math.random() * sceneHeight;
+        const size = Math.random() * 2 + 0.5;
+        const opacity = Math.random() * 0.9 + 0.1;
+        
+        ctx.globalAlpha = opacity;
         ctx.beginPath();
         ctx.arc(x, y, size, 0, Math.PI * 2);
         ctx.fill();
     }
+    ctx.globalAlpha = 1;
     
     // Shadowy figure
     ctx.fillStyle = '#181818';
     ctx.beginPath();
-    ctx.arc(250, 150, 30, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, 50, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Add subtle silhouette details
+    ctx.fillStyle = '#202020';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY - 70, 30, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.rect(centerX - 40, centerY, 80, 100);
     ctx.fill();
 }
 
@@ -422,7 +691,9 @@ function createMoviesReferenceImage(container) {
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
     const words = text.split(' ');
     let line = '';
-
+    
+    context.textAlign = 'center';
+    
     for (let n = 0; n < words.length; n++) {
         const testLine = line + words[n] + ' ';
         const metrics = context.measureText(testLine);
